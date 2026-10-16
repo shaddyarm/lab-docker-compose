@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+dist/
+.DS_Store
+report-assets/rendered/
+report-assets/report-review.pdf
+report-assets/*-report.png
+report-assets/build_report.py
+report-assets/capture.cjs

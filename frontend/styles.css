@@ -1,0 +1,21 @@
+body {
+  font: 16px Arial, sans-serif;
+  color: #222;
+  background: #fff;
+  margin: 24px;
+}
+
+main { max-width: 760px; }
+h1 { font-size: 28px; }
+h2 { font-size: 21px; margin-top: 32px; }
+button, input { font: inherit; }
+button { padding: 5px 10px; margin-right: 6px; cursor: pointer; }
+button.active { font-weight: bold; }
+#message:empty { display: none; }
+#message.error { color: #b00020; }
+.book-card { border-bottom: 1px solid #ccc; padding: 8px 0; }
+.book-card h3 { font-size: 17px; margin: 0 0 4px; }
+.book-card p { margin: 0 0 4px; }
+.badge { font-size: 14px; }
+form label { display: block; margin-bottom: 12px; }
+form input:not([type="checkbox"]) { width: min(100%, 350px); padding: 5px; }

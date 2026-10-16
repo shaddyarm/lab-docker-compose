@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Книжная полка</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>Книжная полка</h1>
+    <p>Всего книг: <span id="total-count">—</span>. Прочитано: <span id="read-count">—</span>.</p>
+
+    <h2>Книги в базе</h2>
+    <button type="button" id="show-all" class="active" aria-pressed="true">Все книги</button>
+    <button type="button" id="show-read" aria-pressed="false">Прочитанные</button>
+    <p id="message" role="status" aria-live="polite">Загружаем книги…</p>
+    <div id="books"></div>
+
+    <h2>Добавить книгу</h2>
+    <form id="book-form">
+      <label>Название<br><input name="title" maxlength="150" required></label>
+      <label>Автор<br><input name="author" maxlength="120" required></label>
+      <label><input name="is_read" type="checkbox"> Уже прочитана</label>
+      <button type="submit">Добавить</button>
+    </form>
+  </main>
+</body>
+</html>
