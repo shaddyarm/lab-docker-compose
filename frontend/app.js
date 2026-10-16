@@ -44,6 +44,7 @@ function renderHistory(rows) {
   }
   showStatus(messageElement, "");
   const table = document.createElement("table");
+  table.className = "striped";
   const thead = document.createElement("thead");
   const heading = document.createElement("tr");
   for (const label of ["Модель", "Год", "Пробег, км", "Оценка, ₽"]) {
