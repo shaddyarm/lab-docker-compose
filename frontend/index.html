@@ -3,28 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Книжная полка</title>
+  <title>Оценка автомобиля</title>
   <link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
   <main>
-    <h1>Книжная полка</h1>
-    <p>Всего книг: <span id="total-count">—</span>. Прочитано: <span id="read-count">—</span>.</p>
+    <h1>Оценка автомобиля</h1>
+    <p>Вариант 46. Учебный расчёт ориентировочной стоимости по году выпуска и пробегу.</p>
 
-    <h2>Книги в базе</h2>
-    <button type="button" id="show-all" class="active" aria-pressed="true">Все книги</button>
-    <button type="button" id="show-read" aria-pressed="false">Прочитанные</button>
-    <p id="message" role="status" aria-live="polite">Загружаем книги…</p>
-    <div id="books"></div>
-
-    <h2>Добавить книгу</h2>
-    <form id="book-form">
-      <label>Название<br><input name="title" maxlength="150" required></label>
-      <label>Автор<br><input name="author" maxlength="120" required></label>
-      <label><input name="is_read" type="checkbox"> Уже прочитана</label>
-      <button type="submit">Добавить</button>
+    <h2>Рассчитать стоимость</h2>
+    <form id="valuation-form">
+      <label>Модель<br><select name="model_id" id="model" required><option value="">Загрузка...</option></select></label>
+      <label>Год выпуска<br><input name="year" id="year" type="number" min="1980" required></label>
+      <label>Пробег, км<br><input name="mileage_km" type="number" min="0" max="1000000" value="60000" required></label>
+      <button type="submit">Оценить авто</button>
     </form>
+    <p id="result" role="status" aria-live="polite"></p>
+
+    <h2>История оценок</h2>
+    <button type="button" id="show-history">Показать историю</button>
+    <p id="message" role="status" aria-live="polite"></p>
+    <div id="history"></div>
+
+    <p><small>Оценка выполнена по учебной формуле, это не предложение о продаже.</small></p>
   </main>
 </body>
 </html>

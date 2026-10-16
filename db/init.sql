@@ -1,14 +1,21 @@
-CREATE TABLE books (
+CREATE TABLE car_models (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    title varchar(150) NOT NULL,
-    author varchar(120) NOT NULL,
-    is_read boolean NOT NULL DEFAULT false
+    name varchar(100) NOT NULL UNIQUE,
+    base_price_rub integer NOT NULL CHECK (base_price_rub > 0)
 );
 
-INSERT INTO books (title, author, is_read) VALUES
-    ('Мастер и Маргарита', 'Михаил Булгаков', true),
-    ('Преступление и наказание', 'Фёдор Достоевский', true),
-    ('Евгений Онегин', 'Александр Пушкин', false),
-    ('Война и мир', 'Лев Толстой', false),
-    ('Отцы и дети', 'Иван Тургенев', true),
-    ('Двенадцать стульев', 'Илья Ильф и Евгений Петров', false);
+CREATE TABLE valuation_history (
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    model_id integer NOT NULL REFERENCES car_models(id),
+    year integer NOT NULL,
+    mileage_km integer NOT NULL,
+    estimated_price_rub integer NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO car_models (name, base_price_rub) VALUES
+    ('Lada Vesta', 1800000),
+    ('Kia Rio', 2200000),
+    ('Hyundai Solaris', 2300000),
+    ('Toyota Corolla', 3100000),
+    ('Volkswagen Polo', 2400000);

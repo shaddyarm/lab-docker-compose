@@ -1,9 +1,13 @@
-const booksElement = document.querySelector("#books");
+const form = document.querySelector("#valuation-form");
+const resultElement = document.querySelector("#result");
 const messageElement = document.querySelector("#message");
-const allButton = document.querySelector("#show-all");
-const readButton = document.querySelector("#show-read");
-const form = document.querySelector("#book-form");
-let currentFilter = "all";
+const historyElement = document.querySelector("#history");
+const modelSelect = document.querySelector("#model");
+const yearInput = document.querySelector("#year");
+const money = new Intl.NumberFormat("ru-RU");
+
+yearInput.max = String(new Date().getFullYear());
+yearInput.value = String(new Date().getFullYear() - 5);
 
 async function requestJson(path, options) {
   const response = await fetch(path, options);
@@ -12,81 +16,91 @@ async function requestJson(path, options) {
   return data;
 }
 
-function showMessage(text, isError = false) {
-  messageElement.textContent = text;
-  messageElement.classList.toggle("error", isError);
+function showStatus(element, text, isError = false) {
+  element.textContent = text;
+  element.classList.toggle("error", isError);
 }
 
-function renderBooks(books) {
-  booksElement.replaceChildren();
-  for (const book of books) {
-    const card = document.createElement("article");
-    card.className = "book-card";
-    const title = document.createElement("h3");
-    title.textContent = book.title;
-    const author = document.createElement("p");
-    author.textContent = book.author;
-    const badge = document.createElement("span");
-    badge.className = `badge${book.is_read ? " read" : ""}`;
-    badge.textContent = book.is_read ? "Прочитана" : "В планах";
-    card.append(title, author, badge);
-    booksElement.append(card);
-  }
-}
-
-async function loadBooks(filter) {
-  currentFilter = filter;
-  allButton.classList.toggle("active", filter === "all");
-  readButton.classList.toggle("active", filter === "read");
-  allButton.setAttribute("aria-pressed", String(filter === "all"));
-  readButton.setAttribute("aria-pressed", String(filter === "read"));
-  showMessage("Загружаем книги…");
+async function loadModels() {
   try {
-    const books = await requestJson(`/api/books?status=${filter}`);
-    renderBooks(books);
-    showMessage(books.length ? "" : "В этой подборке пока нет книг.");
+    const models = await requestJson("/api/models");
+    modelSelect.replaceChildren();
+    for (const model of models) {
+      const option = document.createElement("option");
+      option.value = String(model.id);
+      option.textContent = model.name;
+      modelSelect.append(option);
+    }
   } catch (error) {
-    booksElement.replaceChildren();
-    showMessage(error.message, true);
+    showStatus(resultElement, error.message, true);
   }
 }
 
-async function loadStats() {
+function renderHistory(rows) {
+  historyElement.replaceChildren();
+  if (rows.length === 0) {
+    showStatus(messageElement, "История пока пуста.");
+    return;
+  }
+  showStatus(messageElement, "");
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const heading = document.createElement("tr");
+  for (const label of ["Модель", "Год", "Пробег, км", "Оценка, ₽"]) {
+    const cell = document.createElement("th");
+    cell.textContent = label;
+    heading.append(cell);
+  }
+  thead.append(heading);
+  table.append(thead);
+  const tbody = document.createElement("tbody");
+  for (const row of rows) {
+    const tr = document.createElement("tr");
+    for (const value of [row.model_name, row.year, money.format(row.mileage_km), money.format(row.estimated_price_rub)]) {
+      const cell = document.createElement("td");
+      cell.textContent = String(value);
+      tr.append(cell);
+    }
+    tbody.append(tr);
+  }
+  table.append(tbody);
+  historyElement.append(table);
+}
+
+async function loadHistory() {
+  showStatus(messageElement, "Загрузка...");
   try {
-    const stats = await requestJson("/api/stats");
-    document.querySelector("#total-count").textContent = stats.total;
-    document.querySelector("#read-count").textContent = stats.read;
-  } catch {
-    document.querySelector("#total-count").textContent = "—";
-    document.querySelector("#read-count").textContent = "—";
+    renderHistory(await requestJson("/api/valuations"));
+  } catch (error) {
+    historyElement.replaceChildren();
+    showStatus(messageElement, error.message, true);
   }
 }
 
-allButton.addEventListener("click", () => loadBooks("all"));
-readButton.addEventListener("click", () => loadBooks("read"));
-form.addEventListener("submit", async (event) => {
+document.querySelector("#show-history").addEventListener("click", loadHistory);
+form.addEventListener("submit", async event => {
   event.preventDefault();
-  const submitButton = form.querySelector("button[type=submit]");
-  submitButton.disabled = true;
+  const button = form.querySelector("button[type=submit]");
+  button.disabled = true;
+  showStatus(resultElement, "Расчёт...");
   const data = new FormData(form);
   try {
-    await requestJson("/api/books", {
+    const valuation = await requestJson("/api/valuations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: data.get("title"),
-        author: data.get("author"),
-        is_read: data.get("is_read") === "on",
+        model_id: Number(data.get("model_id")),
+        year: Number(data.get("year")),
+        mileage_km: Number(data.get("mileage_km")),
       }),
     });
-    form.reset();
-    await Promise.all([loadBooks(currentFilter), loadStats()]);
+    showStatus(resultElement, `Ориентировочная стоимость: ${money.format(valuation.estimated_price_rub)} ₽`);
+    await loadHistory();
   } catch (error) {
-    showMessage(error.message, true);
+    showStatus(resultElement, error.message, true);
   } finally {
-    submitButton.disabled = false;
+    button.disabled = false;
   }
 });
 
-loadBooks("all");
-loadStats();
+loadModels();
