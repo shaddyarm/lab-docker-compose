@@ -94,7 +94,7 @@ form.addEventListener("submit", async event => {
         mileage_km: Number(data.get("mileage_km")),
       }),
     });
-    showStatus(resultElement, `Ориентировочная стоимость: ${money.format(valuation.estimated_price_rub)} ₽`);
+    showStatus(resultElement, `Стоимость: ${money.format(valuation.estimated_price_rub)} ₽`);
     await loadHistory();
   } catch (error) {
     showStatus(resultElement, error.message, true);
