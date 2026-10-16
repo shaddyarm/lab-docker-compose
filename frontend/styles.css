@@ -1,9 +1,18 @@
+body {
+  background: #fff;
+  color: #17212f;
+}
+
 main.container {
   max-width: 820px;
   padding-top: 2rem;
   padding-bottom: 3rem;
 }
 
+h1, h2, label, p, th, td { color: #17212f; }
+input, select { background: #fff; color: #17212f; border-color: #8293a8; }
+#valuation-form button, #show-history { background: #075985; border-color: #075985; color: #fff; }
+#valuation-form button:hover, #show-history:hover { background: #0c4a6e; border-color: #0c4a6e; }
 form { max-width: 440px; }
 #result { font-weight: bold; }
 #result:empty, #message:empty { display: none; }
